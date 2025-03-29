@@ -3,30 +3,27 @@ const API_URL = "http://localhost:5500/api"; // සර්වර් URL එක
 
 // සාමාන්‍ය fetch ඉල්ලීමක් සඳහා helper function
 const fetchData = async (url: string, options?: RequestInit) => {
-  try {
-    const response = await fetch(url, options);
+  const response = await fetch(url, options);
 
-    if (!response.ok) {
-      let errorMessage = "Error";
-      const contentType = response.headers.get("content-type");
-
-      // Check if response is JSON before parsing
-      if (contentType?.includes("application/json")) {
-        const errorData = await response.json();
-        errorMessage = errorData.message || errorMessage;
-      } else {
-        errorMessage = (await response.text()) || errorMessage;
-      }
-      throw new Error(errorMessage);
+  if (!response.ok) {
+    try {
+      const error = await response.json();
+      throw new Error(error.message || "යම් දෝෂයක් ඇතිවිය");
+    } catch (err) {
+      // If response isn't JSON, use status text
+      throw new Error(response.statusText || "යම් දෝෂයක් ඇතිවිය");
+      console.error(err);
     }
+  }
 
-    // Handle 204 No Content responses (common for DELETE)
-    if (response.status === 204) return null;
-
-    return response.json();
+  if (response.status === 204) {
+    return null;
+  }
+  try {
+    return await response.json();
   } catch (err) {
-    console.error("Fetch error:", err);
-    throw err;
+    throw new Error("Invalid JSON response");
+    console.error(err);
   }
 };
 

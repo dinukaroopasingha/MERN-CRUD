@@ -13,6 +13,7 @@ export default function EditItem() {
   const [formData, setFormData] = useState<Item | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   // take item data
   useEffect(() => {
