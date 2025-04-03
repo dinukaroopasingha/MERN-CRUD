@@ -10,20 +10,18 @@ const fetchData = async (url: string, options?: RequestInit) => {
       const error = await response.json();
       throw new Error(error.message || "යම් දෝෂයක් ඇතිවිය");
     } catch (err) {
-      // If response isn't JSON, use status text
       throw new Error(response.statusText || "යම් දෝෂයක් ඇතිවිය");
-      console.error(err);
+      console.log(err);
     }
   }
 
-  if (response.status === 204) {
-    return null;
-  }
+  if (response.status === 204) return null; // Handle empty response
+
   try {
     return await response.json();
   } catch (err) {
     throw new Error("Invalid JSON response");
-    console.error(err);
+    console.log(err);
   }
 };
 
